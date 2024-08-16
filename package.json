@@ -2,6 +2,10 @@
   "name": "CxxTurboModulesGuide",
   "version": "0.0.1",
   "private": true,
+  "author": "me",
+  "license": "MIT",
+  "homepage": "me",
+  "description": "CxxTurboModulesGuide",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -33,5 +37,13 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "codegenConfig": {
+    "name": "AppSpecs",
+    "type": "all",
+    "jsSrcsDir": "tm",
+    "android": {
+      "javaPackageName": "com.facebook.fbreact.specs"
+    }
+  }
 }

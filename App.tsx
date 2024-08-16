@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useLayoutEffect, useRef} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -24,6 +24,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+console.log("Importing NativeSampleModule from './tm/NativeSampleModule'");
+import NativeSampleModule from './tm/NativeSampleModule';
+
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -57,10 +60,29 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const ref = useRef<View>( null );
+  const [top, setTop] = React.useState(0);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  useLayoutEffect(() => {
+    NativeSampleModule.reverseString(ref.current?.__nativeTag, (top) => {
+        console.log("Callback from reverseString");
+        setTop(200);
+    });
+
+  }, []);
+
+  useLayoutEffect(() => {
+    console.log("useLayoutEffect");
+      setInterval(() => {
+          setTop(0);
+      }, 2000);
+  }, [top]);
+
+  console.log("Rendering App", top);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -73,9 +95,12 @@ function App(): React.JSX.Element {
         style={backgroundStyle}>
         <Header />
         <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
+            ref={ref}
+            style={{ backgroundColor: top === 0 ? 'red' : 'blue'}}
+          >
+            <Section title="Cxx TurboModule">
+              the quick brown fox jumps over the lazy dog
+            </Section>
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.

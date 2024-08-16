@@ -17,6 +17,10 @@ end
 target 'CxxTurboModulesGuide' do
   config = use_native_modules!
 
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    pod 'AppTurboModules', :path => "./../tm"
+  end
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.

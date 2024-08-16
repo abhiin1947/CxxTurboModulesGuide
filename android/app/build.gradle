@@ -117,3 +117,11 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+android {
+    externalNativeBuild {
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
+        }
+    }
+}
