@@ -19,7 +19,7 @@ class NativeSampleModule : public NativeSampleModuleCxxSpec<NativeSampleModule>,
  public:
   NativeSampleModule(std::shared_ptr<CallInvoker> jsInvoker);
 
-  void reverseString(jsi::Runtime& rt, double target, jsi::Function callback);
+  void registerBoundsChangeCallback(jsi::Runtime& rt, double target, jsi::Function callback);
 	
 #pragma mark - UIManagerCommitHook
 
@@ -31,7 +31,7 @@ class NativeSampleModule : public NativeSampleModuleCxxSpec<NativeSampleModule>,
 	  const RootShadowNode::Shared& oldRootShadowNode,
 	  const RootShadowNode::Unshared& newRootShadowNode) noexcept override;
 	
-	
+    std::optional<ShadowNode::Shared> shadowNode;
 	std::optional<jsi::Function> onBoundsChange_;
 	jsi::Runtime* runtime_ = nullptr; // Pointer to the runtime
 };

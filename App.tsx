@@ -8,6 +8,7 @@
 import React, {useLayoutEffect, useRef} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -61,28 +62,35 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const ref = useRef<View>( null );
-  const [top, setTop] = React.useState(0);
+  const [message, setMessage] = React.useState<string | null>("the quick brown fox jumps over the lazy dog");
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
   useLayoutEffect(() => {
-    NativeSampleModule.reverseString(ref.current?.__nativeTag, (top) => {
-        console.log("Callback from reverseString");
-        setTop(200);
+    const target = (ref.current as any)?.__nativeTag as number;
+    NativeSampleModule.registerBoundsChangeCallback(target, ({oldRect, newRect}) => {
+        if (oldRect.width !== newRect.width) {
+            console.log("Width changed from", oldRect.width, "to", newRect.width);
+            return false;
+        }
+
+        if (oldRect.height !== newRect.height) {
+            console.log("Height changed from", oldRect.height, "to", newRect.height);
+            return false;
+        }
+
+        return true;
     });
 
   }, []);
 
-  useLayoutEffect(() => {
-    console.log("useLayoutEffect");
-      setInterval(() => {
-          setTop(0);
-      }, 2000);
-  }, [top]);
-
-  console.log("Rendering App", top);
+    useLayoutEffect(() => {
+        ref.current?.measure((x, y, width, height, pageX, pageY) => {
+            console.log("Measured dimensions", {x, y, width, height, pageX, pageY});
+        });
+    }, [message]);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -94,13 +102,16 @@ function App(): React.JSX.Element {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <Header />
-        <View
-            ref={ref}
-            style={{ backgroundColor: top === 0 ? 'red' : 'blue'}}
+        <Pressable
+            onPress={() => setMessage("the quick brown fox jumps over the lazy dogsdjflksdjfjsadlfjasldjflaksjdflkjasldkjflasjdfl;kjas;ldkfja;lsdjf;alksdjfla;sjdkflajsld;kfjals;kdjfkl;asjdflk;asjdlfjaskl;dfjasl;kdjflasdjflasjdfahsdkfjhasdklfhaksjdhfkjashdfkljashdkjlfhaskldhf")}
           >
-            <Section title="Cxx TurboModule">
-              the quick brown fox jumps over the lazy dog
-            </Section>
+            <View ref={ref}>
+                <Section title="Cxx TurboModule">
+                    {message}
+                </Section>
+            </View>
+
+        </Pressable>
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
@@ -115,7 +126,6 @@ function App(): React.JSX.Element {
             Read the docs to discover what to do next:
           </Section>
           <LearnMoreLinks />
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
